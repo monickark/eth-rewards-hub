@@ -33,7 +33,75 @@
             <button class="col-lg-2 btn btn-warning" id="getBal">Get Balance</button></div>  
 			<div class="alert alert-warning bal-success"></div>			
     </div>
+
+		  <div class="row">
+			<div class="col-md-12">
 	
+			  <p>No wallet connected. Connect wallet to show accounts and their ETH balances.</p>
+	
+			  <div class="alert alert-danger" id="alert-error-https" style="display: none">
+				You can run this example only over HTTPS connection.
+			  </div>
+	
+			  <div id="prepare">
+				<button class="btn btn-primary" id="btn-connect">
+				  Connect wallet
+				</button>
+			  </div>
+	
+			  <div id="connected" style="display: none">
+	
+				<button class="btn btn-primary" id="btn-disconnect">
+				  Disconnect wallet
+				</button>
+	
+				<hr>
+	
+				<div id="network">
+				  <p>
+					<strong>Connected blockchain:</strong> <span id="network-name"></span>
+				  </p>
+	
+				  <p>
+					<strong>Selected account:</strong> <span id="selected-account"></span>
+				  </p>
+	
+				</div>
+	
+				<hr>
+	
+				<h3>All account balances</h3>
+	
+				<table class="table table-listing">
+				  <thead>
+					<th>Address</th>
+					<th>ETH balance</th>
+				  </thead>
+	
+				  <tbody id="accounts">
+				  </tbody>
+				</table>
+	
+				<p>Please try to switch between different accounts in your wallet if your wallet supports this functonality.</p>
+	
+			  </div>
+	
+			  <br>
+	
+			</div>
+		  </div>
+	
+	<!-- We use simple <template> templating for the example -->
+		<div id="templates" style="display: none">
+			<template id="template-balance">
+			  <tr>
+				<th class="address"></th>
+				<td class="balance"></td>
+			  </tr>
+			</template>
+		  </div>
+
+
 </body>
 
 <script>
@@ -42,7 +110,7 @@ var web3;
 $(document).ready(function() {
 	$(".success").hide(); $(".bal-success").hide(); $(".tx-success").hide();
   if (typeof web3 !== 'undefined') {  // alert("web3 detected");
-    startApp(web3);
+    /* startApp(web3); */
   }
 function startApp(web3) {
     window.ethereum.enable();
@@ -51,10 +119,6 @@ function startApp(web3) {
     var rinkebyABI= JSON.parse('[{"inputs":[{"internalType":"address payable","name":"addr1","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"fundtransfer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"payMe","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]');
 	EtherContract = web3.eth.contract(rinkebyABI);
     var rinkebyInstance = EtherContract.at('0xbB0592720Ed6116dfcda973099E4b484E8D616eB');
-	
-	// var localABI= JSON.parse('[ { "constant":false,"inputs":[{"name":"addr1","type":"address"},{"name":"amount","type":"uint256"}], "name":"fundtransfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false, "inputs":[],"name":"payMe","outputs":[{"name":"success","type":"bool"}],"payable":true,"stateMutability":"payable", "type":"function"},{"constant":true,"inputs":[],"name":"balance","outputs":[{"name":"","type":"uint256"}],"payable": false,"stateMutability":"view","type":"function"}]');
-    // EtherContract = web3.eth.contract(localABI);
-    // localInstance = EtherContract.at('0xf40D39645F676367D53819537f449A3228c13D5e');
 	
 	instance = rinkebyInstance;
     }
@@ -99,4 +163,12 @@ $(document).on("click", "#paySm", function(){
  });
 
 </script>
+
+<script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/web3modal@1.9.0/dist/index.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/evm-chains@0.2.0/dist/umd/index.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider@1.2.1/dist/umd/index.min.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/fortmatic@2.0.6/dist/fortmatic.js"></script>
+	<!-- This is our example code -->
+    <script type="text/javascript" src="./example.js"></script>
 </html>
