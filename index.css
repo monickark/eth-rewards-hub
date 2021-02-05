@@ -1,0 +1,38 @@
+body {
+	padding: 2em;	
+	background-image: url('bg.jpg');
+    background-repeat: repeat;
+    background-position: right top;
+    background-attachment: scroll;
+	opacity: 0.9;
+	background-size: cover;		
+}
+p {
+	font-weight : 600;
+}
+.container {
+	width: 75%;
+	margin: 0 auto;
+}
+label {
+	display:block;
+	margin-bottom:5px;
+}
+input {
+	padding:10px;
+	width: 50%;
+	margin-bottom: 1em;
+}
+button {
+    padding: 0px 10PX!IMPORTANT;
+    HEIGHT: 37PX !IMPORTANT;
+}
+.alert {
+    padding: 5px 10px;
+}
+h3 {
+	margin-top: 1em;
+}
+h6 {
+	margin-top: 1em;
+}
