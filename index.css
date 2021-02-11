@@ -30,11 +30,6 @@ input {
 	padding:10px;
 	width: 50%;
 }
-.pool-info{
-	font-weight: 600;
-	font-style: italic;
-	color: #393637;
-}
 button {
     padding: 0px 10PX!IMPORTANT;
     HEIGHT: 38PX !IMPORTANT;
@@ -44,7 +39,10 @@ button {
 }
 .alert {
     padding: 1px 10px;
-    font-size: .8em;
+	font-size: .8em;
+	font-weight: 600;
+	font-style: italic;
+	color: #393637;
 }
 h3 {
 	margin-top: 1em;

@@ -109,7 +109,7 @@
 			
 		});
 
-		$(document).on("click", "#max-txion-token", async function(){
+		$(document).on("click", "#txion-btn", async function(){
 			var token = $("#max-txion-token").val();
 			// var wei = parseInt(token)*1e18;
 			console.log("token: "+ token);
@@ -120,12 +120,12 @@
 			
 		});
 
-		$(document).on("click", "#max-day-token", async function(){
+		$(document).on("click", "#day-btn", async function(){
 			var token = $("#max-day-token").val();
 			// var wei = parseInt(token)*1e18;
 			console.log("token: "+ token);
 		
-			const tx = await daiWithSigner.redeemToken(token);			
+			const tx = await daiWithSigner.setDayLimit(token);			
 			$(".day-success").text(tx.hash);
 			console.log("Transaction : " + tx.hash);
 		});
