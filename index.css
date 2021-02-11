@@ -30,6 +30,7 @@ input {
 	padding:10px;
 	width: 50%;
 }
+
 button {
     padding: 0px 10PX!IMPORTANT;
     HEIGHT: 38PX !IMPORTANT;
@@ -43,10 +44,15 @@ button {
 	font-weight: 600;
 	font-style: italic;
 	color: #393637;
+	margin-top: 3px;
 }
 h3 {
 	margin-top: 1em;
 }
 h6 {
 	margin-top: 1em;
+}
+.h2, h2 {
+	font-size: 1.5rem;
+	margin-bottom: 2px;
 }
