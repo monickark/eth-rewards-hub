@@ -73,8 +73,8 @@
 				<h2 class="row col-lg-12" >POINT TO TOKEN CONVERSION RATIO</h2>
 					<div class="form-group row col-lg-12">
 						<input class="col-lg-8 form-control" id="ratio" type="text" placeholder="Conversion ratio"/>
-						<button class="col-lg-4 form-control btn btn-info" id="pool-create">Convert</button> 
-						<div class="col-lg-12 alert alert-info pool-info" role="alert"></div>			
+						<button class="col-lg-4 form-control btn btn-info" id="ratio-btn">Set</button> 
+						<div class="col-lg-12 alert alert-info ratio-success" role="alert"></div>			
 					</div>
 				<!-- <h2 class="row col-lg-12" >MAX TOKENS PER TRANSACTION</h2>
 					<div class="form-group row col-lg-12">
@@ -112,11 +112,10 @@
 		const signer = provider.getSigner()
 		
 		// contract details
-		var rinkebyABI= JSON.parse('[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"uint256","name":"poolTokens","type":"uint256"}],"name":"createPool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"maxDayToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxTransToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ownerBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenToRedeem","type":"uint256"}],"name":"redeemToken","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setDayLimit","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setTranLimit","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"userBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]');
-		const daiContract = new ethers.Contract('0x7d09f43408bB0c956aa910446DAa6CeA1be429d4', rinkebyABI, provider);
+		var rinkebyABI= JSON.parse('[{"inputs":[{"internalType":"uint256","name":"poolTokens","type":"uint256"}],"name":"createPool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenToRedeem","type":"uint256"}],"name":"redeemToken","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"ratio","type":"uint256"}],"name":"setConversionRatio","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setDayLimit","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setTranLimit","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"conversionRatio","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxDayToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxTransToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ownerBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"userBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]');
+		const daiContract = new ethers.Contract('0x8B956ff88257622e2319f423Dadc9EcBc095F70e', rinkebyABI, provider);
 		const daiWithSigner = daiContract.connect(signer);	
 		
-		getMaxTokenLimit();
 		getTokenBalance();
 		// Calling create pool function
 		$(document).on("click", "#pool-create", async function(){
@@ -151,16 +150,24 @@
 			console.log("Transaction : " + tx.hash);
 		});
 
-		async function getMaxTokenLimit() {
-			const maxDayToken = await daiWithSigner.maxDayToken();
-			$("#max-day-token").val(maxDayToken);
-			console.log("#max-day-token : " + maxDayToken);
+		$(document).on("change", "#ratio", async function(){
+			var value = $("#ratio").val();
+			// var wei = parseInt(token)*1e18;
+			console.log("Ratio value: "+ value);
+		    var reflect = "For 100 tokens you will get " + (100* value)/100 +" tokens";
+			$(".ratio-success").text(reflect);
+			console.log("ratio : " + value);
+		});
 
-			const maxTransToken = await daiWithSigner.maxTransToken();
-			$("#max-txion-token").text(maxTransToken);
-			console.log("max-txion-token : " + maxTransToken);
-
-		}
+		$(document).on("click", "#ratio-btn", async function(){
+			var value = $("#ratio").val();
+			// var wei = parseInt(token)*1e18;
+			console.log("Ratio value: "+ value);
+		
+			const tx = await daiWithSigner.setConversionRatio(value);			
+			$(".ratio-success").text(tx.hash);
+			console.log("ratio-success : " + tx.hash);
+		});
 
 		async function getTokenBalance() {
 		    const poolBalance = await daiWithSigner.poolBalance();
@@ -168,12 +175,19 @@
 			console.log("poolBalance : " + poolBalance);
 
 			const maxDayToken = await daiWithSigner.maxDayToken();
-			$(".day-success").text("Currently " +maxDayToken+ " MIXS tokens in pool");
+			$(".day-success").text("User can transfer only " +maxDayToken+ " tokens per day");
 			console.log("maxDayToken : " + maxDayToken);
+			$("#max-day-token").val(maxDayToken);
 
 			const maxTransToken = await daiWithSigner.maxTransToken();
-			$(".txion-success").text("Currently " +maxTransToken+ " MIXS tokens in pool");
+			$(".txion-success").text("User can transfer only " +maxTransToken+ " tokens per transactions");
 			console.log("maxTransToken : " + maxTransToken);
+			$("#max-txion-token").val(maxTransToken);
+
+			const conversionRatio = await daiWithSigner.conversionRatio();
+			$(".ratio-success").text("User will get " +conversionRatio+ "% of tokens for given points");
+			console.log("conversionRatio : " + conversionRatio);
+			$("#ratio").val(conversionRatio);
 		}
 		
 	</script>
