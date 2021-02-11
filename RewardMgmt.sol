@@ -6,7 +6,7 @@ contract RewardMgmt {
     address owner;
     uint256 public maxDayToken;
     uint256 public maxTransToken;
-    uint256 conversionRatio = 4;
+    uint256 public conversionRatio;
     TOKEN erc20;
     
      constructor() {
@@ -24,7 +24,6 @@ contract RewardMgmt {
     
     /* Admin Set the day limit*/
     function setDayLimit(uint256 amount) public returns(bool success)  {
-
         // Only the contract owner can call this function
         require(msg.sender == owner, "You are not the owner.");
         maxDayToken = amount;
@@ -33,12 +32,20 @@ contract RewardMgmt {
 
     /* Admin Set the transaction limit*/
     function setTranLimit(uint256 amount) public returns(bool success) {
-
         // Only the contract owner can call this function
         require(msg.sender == owner, "You are not the owner.");
         maxTransToken = amount;
         return true;
     }
+    
+    /* Admin Set points to token conversion ratio*/
+    function setConversionRatio(uint256 ratio) public returns(bool success) {
+        // Only the contract owner can call this function
+        require(msg.sender == owner, "You are not the owner.");
+        conversionRatio = ratio;
+        return true;
+    }
+    
     
     function createPool(uint256 poolTokens) public {
        // require(msg.sender == admin, 'You must be admin');
