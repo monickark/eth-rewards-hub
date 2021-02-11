@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Document</title>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.11/web3.min.js" integrity="sha512-6lf28FmolQdo4ap44cXw7j+thYEZzS1/kXxDkX1ppO//SHCageBS1HmYdqkkL819WfGtQ+7TE+uXEwsxjJXEKQ==" crossorigin="anonymous"></script> -->
+		
+</script>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+	
+    <body > 
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<a class="navbar-brand" href="#">Rewards Hub</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" 
+			data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
+			aria-expanded="false" aria-label="Toggle navigation">
+			  <span class="navbar-toggler-icon"></span>
+			</button>
+		  
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			  <ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+				  <a class="nav-link" href="admin.html">Admin <span class="sr-only">(current)</span> </a>
+				</li>
+				<li class="nav-item">
+				  <a class="nav-link" href="user.html">User</a>
+				</li>
+			  </ul>
+			</div>
+			<div id="prepare">
+				<button class="btn btn-primary" id="btn-connect">
+				  Connect wallet
+				</button>
+			  </div>
+	
+			  <div id="connected" style="display: none">	
+				<button class="btn btn-primary" id="btn-disconnect">
+				  Disconnect wallet
+				</button>	
+			  </div>
+			<div id="selected-account"></div> 
+		  </nav>
+		  <div class="container">
+		  <div class="row">
+			<div class="col-md-12">
+				<h2 class="row col-lg-12" >POOL CREATION</h2><div>
+					<div class="form-group row col-lg-12">
+						<input class="col-lg-4 form-control" id="pool-token" type="text" placeholder="Tokens for pool creation"/>
+						<button class="col-lg-2 btn btn-warning" id="pool-create">Create</button></div>  
+						<div class="col-lg-6 alert alert-light pool-info" role="alert"></div>			
+					</div>
+				<h2 class="row col-lg-12" >MAX TOKENS PER TRANSACTION</h2><div>
+					<div class="form-group row col-lg-12">
+						<input class="col-lg-4 form-control" id="max-txion-token" type="text" placeholder="Max tokens per transaction"/>
+						<button class="col-lg-2 btn btn-success" id="txion-btn">Set</button></div>  
+						<div class="col-lg-6 alert alert-success txion-success" role="alert"></div>			
+					</div>
+					
+					<h3 class="row col-lg-12" >MAX TOKENS PER DAY</h3><div>
+					<div class="form-group row col-lg-12">
+						<input class="col-lg-4 form-control" id="max-day-token" type="text" placeholder="Max tokens per day"/>
+						<button class="col-lg-2 btn btn-dark" id="day-btn">Set</button></div>  
+						<div class="col-lg-6 alert alert-dark day-success" role="alert"></div>			
+					</div><hr/>
+			</div>
+		  </div>	
+		</div>
+</body>
+	<script>
+		$(document).ready(function() {
+			// $(".pool-success").hide(); $(".txion-success").hide(); $(".day-success").hide();
+		});
+	</script>
+	<script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/web3modal@1.9.0/dist/index.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/evm-chains@0.2.0/dist/umd/index.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider@1.2.1/dist/umd/index.min.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/fortmatic@2.0.6/dist/fortmatic.js"></script>
+	<!-- This is our example code -->
+	<script type="text/javascript" src="./example.js"></script>
+	
+	<script type="module">
+		import { ethers } from "https://cdn.ethers.io/lib/ethers-5.0.esm.min.js";
+		const provider = new ethers.providers.Web3Provider(window.ethereum)
+		const signer = provider.getSigner()
+		
+		// contract details
+		var rinkebyABI= JSON.parse('[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"uint256","name":"poolTokens","type":"uint256"}],"name":"createPool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"maxDayToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxTransToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ownerBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenToRedeem","type":"uint256"}],"name":"redeemToken","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setDayLimit","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setTranLimit","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"userBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]');
+		const daiContract = new ethers.Contract('0x7d09f43408bB0c956aa910446DAa6CeA1be429d4', rinkebyABI, provider);
+		const daiWithSigner = daiContract.connect(signer);	
+		
+		getMaxTokenLimit();
+		getTokenBalance();
+		// Calling create pool function
+		$(document).on("click", "#pool-create", async function(){
+			var token = $("#pool-token").val();
+			// var wei = parseInt(token)*1e18;
+			console.log("token: "+ token);
+			
+			const tx = await daiWithSigner.createPool(token);			
+			$(".pool-success").text(tx.hash);
+			console.log("Transaction : " + tx.hash);
+			
+		});
+
+		$(document).on("click", "#max-txion-token", async function(){
+			var token = $("#max-txion-token").val();
+			// var wei = parseInt(token)*1e18;
+			console.log("token: "+ token);
+			
+			const tx = await daiWithSigner.setTranLimit(token);			
+			$(".txion-success").text(tx.hash);
+			console.log("Transaction : " + tx.hash);
+			
+		});
+
+		$(document).on("click", "#max-day-token", async function(){
+			var token = $("#max-day-token").val();
+			// var wei = parseInt(token)*1e18;
+			console.log("token: "+ token);
+		
+			const tx = await daiWithSigner.redeemToken(token);			
+			$(".day-success").text(tx.hash);
+			console.log("Transaction : " + tx.hash);
+		});
+
+		async function getMaxTokenLimit() {
+			const maxDayToken = await daiWithSigner.maxDayToken();
+			$("#max-day-token").val(maxDayToken);
+			console.log("#max-day-token : " + maxDayToken);
+
+			const maxTransToken = await daiWithSigner.maxTransToken();
+			$("#max-txion-token").text(maxTransToken);
+			console.log("max-txion-token : " + maxTransToken);
+
+		}
+
+		async function getTokenBalance() {
+		    const poolBalance = await daiWithSigner.poolBalance();
+			$(".pool-info").text("Currently " +poolBalance+ " MIXS tokens in pool");
+			console.log("poolBalance : " + poolBalance);
+
+			const maxDayToken = await daiWithSigner.maxDayToken();
+			$(".day-success").text("Currently " +maxDayToken+ " MIXS tokens in pool");
+			console.log("maxDayToken : " + maxDayToken);
+
+			const maxTransToken = await daiWithSigner.maxTransToken();
+			$(".txion-success").text("Currently " +maxTransToken+ " MIXS tokens in pool");
+			console.log("maxTransToken : " + maxTransToken);
+		}
+		
+	</script>
+</html>

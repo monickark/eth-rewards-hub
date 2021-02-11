@@ -85,7 +85,7 @@ async function fetchAccountData() {
   const chainId = await web3.eth.getChainId();
   // Load chain information over an HTTP API
   const chainData = evmChains.getChain(chainId);
-  document.querySelector("#network-name").textContent = chainData.name;
+ // document.querySelector("#network-name").textContent = chainData.name;
 
   // Get list of accounts of the connected wallet
   const accounts = await web3.eth.getAccounts();
@@ -96,31 +96,31 @@ async function fetchAccountData() {
 
   document.querySelector("#selected-account").textContent = selectedAccount;
 
-  // Get a handl
-  const template = document.querySelector("#template-balance");
-  const accountContainer = document.querySelector("#accounts");
+  // // Get a handl
+  // const template = document.querySelector("#template-balance");
+  // // const accountContainer = document.querySelector("#accounts");
 
-  // Purge UI elements any previously loaded accounts
-  accountContainer.innerHTML = '';
+  // // // Purge UI elements any previously loaded accounts
+  // // accountContainer.innerHTML = '';
 
-  // Go through all accounts and get their ETH balance
-  const rowResolvers = accounts.map(async (address) => {
-    const balance = await web3.eth.getBalance(address);
-    // ethBalance is a BigNumber instance
-    // https://github.com/indutny/bn.js/
-    const ethBalance = web3.utils.fromWei(balance, "ether");
-    const humanFriendlyBalance = parseFloat(ethBalance).toFixed(4);
-    // Fill in the templated row and put in the document
-    const clone = template.content.cloneNode(true);
-    clone.querySelector(".address").textContent = address;
-    clone.querySelector(".balance").textContent = humanFriendlyBalance;
-    accountContainer.appendChild(clone);
-  });
+  // // Go through all accounts and get their ETH balance
+  // const rowResolvers = accounts.map(async (address) => {
+  //   const balance = await web3.eth.getBalance(address);
+  //   // ethBalance is a BigNumber instance
+  //   // https://github.com/indutny/bn.js/
+  //   const ethBalance = web3.utils.fromWei(balance, "ether");
+  //   const humanFriendlyBalance = parseFloat(ethBalance).toFixed(4);
+  //   // Fill in the templated row and put in the document
+  //   const clone = template.content.cloneNode(true);
+  //   clone.querySelector(".address").textContent = address;
+  //   clone.querySelector(".balance").textContent = humanFriendlyBalance;
+   //  accountContainer.appendChild(clone);
+  //});
 
   // Because rendering account does its own RPC commucation
   // with Ethereum node, we do not want to display any results
   // until data for all accounts is loaded
-  await Promise.all(rowResolvers);
+  //await Promise.all(rowResolvers);
 
   // Display fully loaded UI for wallet data
   document.querySelector("#prepare").style.display = "none";

@@ -1,18 +1,26 @@
-body {
-	padding: 2em;	
+body {	
 	background-image: url('bg.jpg');
     background-repeat: repeat;
     background-position: right top;
     background-attachment: scroll;
-	opacity: 0.9;
 	background-size: cover;		
+	color: #fff;
+}
+.form-control {
+    border-radius: 0em !important; 
+}
+button {
+    border-radius: 0em !important; 
+}
+#btn-disconnect {
+    margin-right: 1em;
 }
 p {
 	font-weight : 600;
 }
 .container {
-	width: 75%;
-	margin: 0 auto;
+	width: 100%;
+    margin: 3em 3em;
 }
 label {
 	display:block;
@@ -21,14 +29,22 @@ label {
 input {
 	padding:10px;
 	width: 50%;
-	margin-bottom: 1em;
+}
+.pool-info{
+	font-weight: 600;
+	font-style: italic;
+	color: #393637;
 }
 button {
     padding: 0px 10PX!IMPORTANT;
-    HEIGHT: 37PX !IMPORTANT;
+    HEIGHT: 38PX !IMPORTANT;
+}
+.form-group {
+    margin-bottom: 0.2rem;
 }
 .alert {
-    padding: 5px 10px;
+    padding: 1px 10px;
+    font-size: .8em;
 }
 h3 {
 	margin-top: 1em;
