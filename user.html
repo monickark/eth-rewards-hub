@@ -58,14 +58,8 @@
 						<div class="alert alert-dark redeem-success" role="alert"></div>			
 					</div>
 					
-					<h3 class="row col-lg-12" >BALANCES </h3><div>
-					<div class="form-group row col-lg-12">
-						<ul>
-							<li>Pool Token Balance : <span class="pool-bal"></span> MIXS</li>
-							<li>Owner Token Balance : <span class="owner-bal"></span> MIXS</li>
-							<li>User Token Balance : <span class="user-bal"></span> MIXS</li>
-						</ul>		
-					</div>
+					<h3 class="row col-lg-12" >TOKEN BALANCE : <span class="user-bal"></span> MIXS </h3><div>
+					
 	
 	
 			</div>
@@ -103,10 +97,35 @@
 			// var wei = parseInt(token)*1e18;
 			console.log("token: "+ token);
 		
-			const tx = await rewardMgmtSigner.redeemToken(token);			
-			$(".redeem-success").text(tx.hash);
-			console.log("Transaction : " + tx.hash);
+			await rewardMgmtSigner.redeemToken(token).then(async function(tx){
+				$(".redeem-success").text(tx.hash);
+				console.log("Transaction hash : " + tx.hash);	
+				setTimeout(await function(){dispResult(token, tx.hash); }, 5000);		
+				
+			});	
 		});
+
+		async function dispResult(token, hash) {
+				console.log(token);
+				console.log(hash);
+				provider.getTransactionReceipt(hash).then(async function(receipt) {
+					console.log("Transaction Receipt: " +receipt);
+					if(receipt) {
+						if(receipt.status == 1) {
+						console.log("success");					
+							$(".redeem-success").text("Successfully redeemed "+ token +" token .");
+							$(".redeem-success").show();
+						} else {
+							console.log("fail");					
+							$(".redeem-success").text("Txion failed");
+							$(".redeem-success").show();
+						}
+					} else {
+						setTimeout(await function(){dispResult(token, hash); }, 5000);
+					
+					}
+				});		
+			}
 
 
 		$(document).on("change", "#redeem-token", async function(){
