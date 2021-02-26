@@ -3,70 +3,84 @@ const provider = new ethers.providers.Web3Provider(window.ethereum)
 import { reward, token } from "./common.js";
 
 let rewardMgmtSigner = reward();
-getTokenBalance();
+getUserBalance();
 var conversionRatio;
 
 $(document).on("click", "#redeem-btn", async function(){
-    var token = $("#redeem-token").val();
-    // var wei = parseInt(token)*1e18;    
+    var token = parseInt($("#redeem-token").val());
+    var points = parseInt($("#points").val());
+    var existingPoint = parseInt($(".points-bal").text());
+    
     console.log("token: "+ token);
-    var opClass = ".redeem-success";
-
-    await rewardMgmtSigner.redeemToken(token).then(async function(tx){
-        $(opClass).text("Waiting for block confirmation..");
+    console.log("points: "+ points);
+    console.log("existingPoint: "+ existingPoint);
+    
+    var opClass = ".opClass";
+    if(points <= existingPoint  && points > 0 && token > 0) {
+        await rewardMgmtSigner.redeemToken(token).then(async function(tx){       
+            $(opClass).text("Waiting for block confirmation..");
+            $(opClass).show();
+            var succMes =  "Successfully redeemed "+ token +" token.";
+            var FailureMes = "Txion failed";
+            setTimeout(function () { dispOp(tx.hash, points, opClass, succMes, FailureMes); }, 5000);
+            }).catch(function (error){
+                console.log("error");
+                console.log(JSON.stringify(error));	
+                console.log(error.error.message)	
+                $(opClass).text(error.error.message);
+                $(opClass).show();		
+            }); 
+    } else {
+        $(opClass).text("Invalid points & tokens to redeem");
         $(opClass).show();
-        var succMes =  "Successfully redeemed "+ token +" token.";
-        var FailureMes = "Txion failed";
-        setTimeout(await function(){dispOp(tx.hash, opClass, succMes, FailureMes); }, 5000);  
-      }).catch(function (error){
-            console.log("error");		
-            $(opClass).text(error.error.message);
-            $(opClass).show();		
-        });  
-});
+    }
+     
+    });	
 
-async function dispOp(hash, opClass, succMes, failureMes) {
-    console.log(hash);
-    console.log(opClass);
-    console.log(succMes);
-    console.log(failureMes);
+    async function dispOp(hash, points, opClass, succMes, failureMes) {
     provider.getTransactionReceipt(hash).then(async function(receipt) {
-        console.log("Transaction Receipt: " +receipt);
-        if(receipt) {
-            if(receipt.status == 1) {
-                console.log("success");					
-                $(opClass).text(succMes);
+        console.log("Transaction Receipt: " + receipt);
+            if(receipt) {
+                console.log("Transaction status: " +JSON.stringify(receipt.status));
+                if(receipt.status == 1) {				
+                    console.log("success");		
+                    console.log(points);			
+                    await rewardMgmtSigner.deductPoints(points).then(async function(tx){
+                        setTimeout(function () { dispFinalOp(tx.hash, points, opClass, succMes, failureMes); }, 5000);
+                    }).catch(function (error){
+                        console.log("inner error");		
+                        console.log(JSON.stringify(error));		
+                        $(opClass).text(error.error.message);
+                    });                      
+                } else {
+                    console.log("fail");					
+                    $(opClass).text(failureMes);
+                }
             } else {
-                console.log("fail");					
-                $(opClass).text(failureMes);
-            }            
-        } else {
-            setTimeout(await function(){dispOp(hash, opClass, succMes, failureMes); }, 5000);        
-        }
-    });		
-}
+                setTimeout(function () { dispOp(hash, points, opClass, succMes, failureMes); }, 5000); 
+            }
+        });		
+    }
 
-// async function dispResult(token, hash) {
-//         console.log(token);
-//         console.log(hash);
-//         provider.getTransactionReceipt(hash).then(async function(receipt) {
-//             console.log("Transaction Receipt: " +receipt);
-//             if(receipt) {
-//                 if(receipt.status == 1) {
-//                 console.log("success");					
-//                     $(".redeem-success").text("Successfully redeemed "+ token +" token .");
-//                     $(".redeem-success").show();
-//                 } else {
-//                     console.log("fail");					
-//                     $(".redeem-success").text("Txion failed");
-//                     $(".redeem-success").show();
-//                 }
-//             } else {
-//                 setTimeout(await function(){dispResult(token, hash); }, 5000);
-            
-//             }
-//         });		
-//     }
+    async function dispFinalOp(hash, points, opClass, succMes, failureMes) {        
+        provider.getTransactionReceipt(hash).then(async function(receipt) {
+            console.log("Transaction Receipt: " + receipt);
+                if(receipt) {
+                    console.log("Transaction status: " +JSON.stringify(receipt.status));
+                    if(receipt.status == 1) {				
+                        console.log("success");		
+                        console.log(points);  
+                        $(opClass).text(succMes);
+                        getUserBalance();             
+                    } else {
+                        console.log("fail");					
+                        $(opClass).text(failureMes);
+                    }
+                } else {
+                    setTimeout(function () { dispFinalOp(hash, points, opClass, succMes, failureMes); }, 5000); 
+                }
+            });		
+        }
 
 
 $(document).on("change", "#redeem-token", async function(){
@@ -76,17 +90,6 @@ $(document).on("change", "#redeem-token", async function(){
     $("#points").val(points);
     console.log("points : " + points);
 });
-
-async function getTokenBalance() {
-    const userBalance = await rewardMgmtSigner.userBalance();
-    $(".user-bal").text(userBalance);
-    console.log("userBalance : " + userBalance);
-
-    const cr = await rewardMgmtSigner.conversionRatio();
-    console.log("conversionRatio : " + cr);
-    conversionRatio = cr;
-}
-
 $(document).on("change", "#points", async function(){
     var points = $("#points").val();			
     // var wei = parseInt(token)*1e18;
@@ -94,3 +97,42 @@ $(document).on("change", "#points", async function(){
     $("#redeem-token").val(token);
     console.log("Token : " + token);			
 });
+
+function loadPointsConvert() {
+    var points = parseInt($(".points-bal").text());
+    var onetPt = parseInt($(".one-usd").text())/1000;
+    var token = parseInt(onetPt*points);
+    console.log("points : " + points + "onetPt : " + onetPt + "token : " + token)
+    $("#points").val(points);
+    $("#redeem-token").val(token);
+}
+
+async function getUserBalance() {
+    const userBalance = await rewardMgmtSigner.userBalance();
+    $(".user-bal").text(userBalance);
+    console.log("userBalance : " + userBalance);
+
+    const cr = await rewardMgmtSigner.conversionRatio();
+    console.log("conversionRatio : " + cr);
+    conversionRatio = cr;
+
+    const pointsBalance = await rewardMgmtSigner.pointsBalance();
+    $(".points-bal").text(pointsBalance);
+    console.log("pointsBalance : " + pointsBalance);
+
+    let request = new XMLHttpRequest();
+    request.open("GET", "https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0xB0BFB1E2F72511cF8b4D004852E2054d7b9a76e1&vs_currencies=usd", true);
+    request.onload = () => {
+        console.log(" Request text : "+ request.responseText)
+        var resArr = request.responseText.split(":")
+        var price = resArr[2].split('}')
+        console.log(" USD2 : "+ price[0])
+        $(".mixs-price").text(price[0]);
+        var oneusd = 1/(parseFloat(price[0]));
+        console.log("1 usd have " + oneusd + "token");        
+        $(".one-usd").text(oneusd);
+        loadPointsConvert();
+    }
+    request.send();
+    
+}

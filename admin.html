@@ -49,6 +49,7 @@
 		  <div class="container">
 		  <div class="row">
 			<h1 class="col-md-12 text-center"> REWARDS HUB ADMIN FLOW </h1>
+			<h5 class="col-md-12 owner text-center"></h5>
 			<div class="col-md-6">
 				<h2 class="row col-lg-12" >POOL CREATION</h2>
 					<div class="form-group row col-lg-12">
@@ -77,13 +78,21 @@
 						<button class="col-lg-4 form-control btn btn-info" id="ratio-btn">Set</button> 
 						<div class="col-lg-12 alert alert-info ratio-success" role="alert"></div>			
 					</div>
+				<h2 class="row col-lg-12" >ADD POINTS</h2>
+					<div class="form-group row col-lg-12">
+						<input class="col-lg-12 form-control" id="address" type="text" placeholder="Address"/>
+						<input class="col-lg-8 form-control" id="points" type="text" placeholder="Points"/>
+						<button class="col-lg-4 form-control btn btn-danger" id="points-btn">Add</button> 
+						<div class="col-lg-12 alert alert-danger points-success" role="alert"></div>			
+					</div>
+
 			</div>
 		  </div>	
 		</div>
 </body>
 	<script>
 		$(document).ready(function() {
-			// $(".pool-success").hide(); $(".txion-success").hide(); $(".day-success").hide();
+			$(".points-success").hide(); 
 		});
 	</script>
 	<script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>

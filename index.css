@@ -6,6 +6,12 @@ body {
 	background-size: cover;		
 	color: #fff;
 }
+.owner {
+	margin-top: -1em;
+    margin-bottom: 2em;
+    font-style: italic;
+    color: #979191;
+}
 .form-control {
     border-radius: 0em !important; 
 }
@@ -26,11 +32,15 @@ label {
 	display:block;
 	margin-bottom:5px;
 }
-input {
+/* input {
 	padding:10px;
 	width: 50%;
+} */
+input[type="checkbox"] {
+    float: left;
+    margin-right: 5px;
+    margin-top: 6px;
 }
-
 button {
     padding: 0px 10PX!IMPORTANT;
     HEIGHT: 38PX !IMPORTANT;
