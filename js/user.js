@@ -4,23 +4,25 @@ import { reward, token } from "./common.js";
 
 let rewardMgmtSigner = reward();
 getTokenBalance();
-getPointBalance()
 var conversionRatio;
 
 $(document).on("click", "#redeem-btn", async function(){
     var token = $("#redeem-token").val();
-    var points = $("#points").val();
-    // var wei = parseInt(token)*1e18;
+    // var wei = parseInt(token)*1e18;    
     console.log("token: "+ token);
-    console.log("points: "+ points);
+    var opClass = ".redeem-success";
 
     await rewardMgmtSigner.redeemToken(token).then(async function(tx){
         $(opClass).text("Waiting for block confirmation..");
         $(opClass).show();
         var succMes =  "Successfully redeemed "+ token +" token.";
         var FailureMes = "Txion failed";
-        setTimeout(await function(){dispOp(tx.hash, opClass, succMes, FailureMes); }, 5000);
-    });	
+        setTimeout(await function(){dispOp(tx.hash, opClass, succMes, FailureMes); }, 5000);  
+      }).catch(function (error){
+            console.log("error");		
+            $(opClass).text(error.error.message);
+            $(opClass).show();		
+        });  
 });
 
 async function dispOp(hash, opClass, succMes, failureMes) {
@@ -30,21 +32,41 @@ async function dispOp(hash, opClass, succMes, failureMes) {
     console.log(failureMes);
     provider.getTransactionReceipt(hash).then(async function(receipt) {
         console.log("Transaction Receipt: " +receipt);
-            if(receipt) {
-                if(receipt.status == 1) {
-                    console.log("success");	
-                    const tx2 = await rewardMgmtSigner.deductPoints(points);				
-                    console.log("success");					
-                    $(opClass).text(succMes);
-                } else {
-                    console.log("fail");					
-                    $(opClass).text(failureMes);
-                }
+        if(receipt) {
+            if(receipt.status == 1) {
+                console.log("success");					
+                $(opClass).text(succMes);
             } else {
-                setTimeout(await function(){dispOp(hash, opClass, succMes, failureMes); }, 5000); 
-            }
-        });		
-    }
+                console.log("fail");					
+                $(opClass).text(failureMes);
+            }            
+        } else {
+            setTimeout(await function(){dispOp(hash, opClass, succMes, failureMes); }, 5000);        
+        }
+    });		
+}
+
+// async function dispResult(token, hash) {
+//         console.log(token);
+//         console.log(hash);
+//         provider.getTransactionReceipt(hash).then(async function(receipt) {
+//             console.log("Transaction Receipt: " +receipt);
+//             if(receipt) {
+//                 if(receipt.status == 1) {
+//                 console.log("success");					
+//                     $(".redeem-success").text("Successfully redeemed "+ token +" token .");
+//                     $(".redeem-success").show();
+//                 } else {
+//                     console.log("fail");					
+//                     $(".redeem-success").text("Txion failed");
+//                     $(".redeem-success").show();
+//                 }
+//             } else {
+//                 setTimeout(await function(){dispResult(token, hash); }, 5000);
+            
+//             }
+//         });		
+//     }
 
 
 $(document).on("change", "#redeem-token", async function(){
@@ -53,13 +75,6 @@ $(document).on("change", "#redeem-token", async function(){
     var points = parseInt(( token / conversionRatio)*100);
     $("#points").val(points);
     console.log("points : " + points);
-});
-$(document).on("change", "#points", async function(){
-    var points = $("#points").val();			
-    // var wei = parseInt(token)*1e18;
-    var token = parseInt(( points * conversionRatio)/100);
-    $("#redeem-token").val(token);
-    console.log("Token : " + token);			
 });
 
 async function getTokenBalance() {
@@ -72,8 +87,10 @@ async function getTokenBalance() {
     conversionRatio = cr;
 }
 
-async function getPointBalance() {
-    const pointsBalance = await rewardMgmtSigner.pointsBalance();
-    $(".points-bal").text(pointsBalance);
-    console.log("pointsBalance : " + pointsBalance);
-}
+$(document).on("change", "#points", async function(){
+    var points = $("#points").val();			
+    // var wei = parseInt(token)*1e18;
+    var token = parseInt(( points * conversionRatio)/100);
+    $("#redeem-token").val(token);
+    console.log("Token : " + token);			
+});

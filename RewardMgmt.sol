@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 
+pragma solidity ^0.7.6;
+
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
@@ -20,7 +22,6 @@ contract Ownable {
 }
 
 contract RewardMgmt is Ownable {
-    address owner;
     uint256 public maxDayToken;
     uint256 public maxTransToken;
     uint256 public conversionRatio;
@@ -91,14 +92,10 @@ contract RewardMgmt is Ownable {
         return true;
     }
 
-    function deductPoints(uint256 points, address userAddress) public returns(bool success) {
-        if(balancePoints[userAddress] >= points){
-            balancePoints[userAddress] -= points;
-            return true;
-        }
-        else{
-            return false;
-        }
+    function deductPoints(uint256 points) public returns(bool success) {
+        require(balancePoints[msg.sender] >= points, 'No points to deduct');
+        balancePoints[msg.sender] -= points;
+        return true;
     }
     
 }
