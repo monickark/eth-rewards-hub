@@ -199,4 +199,5 @@ async function getTokenBalance() {
     const owner = await rewardMgmtSigner.owner();
     $(".owner").text("Owner Address :  "+ owner);
     console.log("owner : " + owner);
+    $("#ratio").val(conversionRatio);
 }
