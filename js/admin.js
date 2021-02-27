@@ -5,7 +5,8 @@ let rewardMgmtSigner = reward();
 let tokenSigner = token();	
 
 getTokenBalance();
-// Calling create pool function
+//Calling create pool function
+
 $(document).on("click", "#pool-create", async function(){
     var token = $("#pool-token").val();
     console.log("token: "+ token);
