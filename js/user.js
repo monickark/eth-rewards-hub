@@ -143,7 +143,13 @@ var conversionRatio;
     function loadPointsConvert() {
         var points = parseInt($(".points-bal").text());
         var onetPt = parseInt($(".one-usd").text())/1000;
-        var token = parseInt(onetPt*points);
+
+        if($('#usd-convert').is(':checked')) {
+            var token = parseInt(onetPt*points);
+        }
+        else{
+            var token = parseInt(( points * conversionRatio)/100);
+        }
         console.log("points : " + points + "onetPt : " + onetPt + "token : " + token)
         $("#points").val(points);
         $("#redeem-token").val(token);

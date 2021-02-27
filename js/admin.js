@@ -12,21 +12,26 @@ $(document).on("click", "#pool-create", async function(){
     console.log("token: "+ token);
     var opClass = ".pool-info";
 
-    await tokenSigner.approve('0x789052a77FA074F9Fbc28DB91173f9D726e9efbA', token)
-    .then(async function(receipt) {
-        $(opClass).text("Waiting for block confirmation...");
+    if(token > 0) {
+        await tokenSigner.approve('0x789052a77FA074F9Fbc28DB91173f9D726e9efbA', token)
+        .then(async function(receipt) {
+            $(opClass).text("Waiting for block confirmation...");
+            $(opClass).show();
+            var succMes =  token+ " MIXS tokens added in pool";	
+            var failureMes = "Txion failed";
+            console.log("Transaction receipt : " + receipt.hash);
+            setTimeout(await function(){poolCreate(token,receipt.hash, opClass,succMes,failureMes); }, 5000);     
+        }).catch(function (error){
+            console.log("error");
+            console.log(JSON.stringify(error));	
+            console.log(error.error.message)	
+            $(opClass).text(error.error.message);
+            $(opClass).show();		
+        });
+    } else {
+        $(opClass).text("Invalid number of tokens for pool creation");
         $(opClass).show();
-        var succMes =  token+ " MIXS tokens added in pool";	
-        var failureMes = "Txion failed";
-        console.log("Transaction receipt : " + receipt.hash);
-        setTimeout(await function(){poolCreate(token,receipt.hash, opClass,succMes,failureMes); }, 5000);     
-    }).catch(function (error){
-        console.log("error");
-        console.log(JSON.stringify(error));	
-        console.log(error.error.message)	
-        $(opClass).text(error.error.message);
-        $(opClass).show();		
-    });    
+    }    
 });
 
 async function poolCreate(token,hash,opClass, succMes,failureMes) {
@@ -63,19 +68,24 @@ $(document).on("click", "#day-btn", async function(){
     console.log("token: "+ token);
     var opClass = ".day-success";
 
-    const tx = await rewardMgmtSigner.setDayLimit(token).then(async function(tx){
-        $(opClass).text("Waiting for block confirmation...");
+    if(token > 0) {
+        const tx = await rewardMgmtSigner.setDayLimit(token).then(async function(tx){
+            $(opClass).text("Waiting for block confirmation...");
+            $(opClass).show();
+            var succMes =  "Now user can transfer max " +token+ " tokens per day";
+            var failureMes = "Txion failed";
+            setTimeout(await function(){dispResult(token, tx.hash, opClass, succMes, failureMes); }, 5000);
+        }).catch(function (error){
+            console.log("error");
+            console.log(JSON.stringify(error));	
+            console.log(error.error.message)	
+            $(opClass).text(error.error.message);
+            $(opClass).show();		
+        });
+    } else {
+        $(opClass).text("Invalid number of tokens");
         $(opClass).show();
-        var succMes =  "Now user can transfer max " +token+ " tokens per day";
-        var failureMes = "Txion failed";
-        setTimeout(await function(){dispResult(token, tx.hash, opClass, succMes, failureMes); }, 5000);
-    }).catch(function (error){
-        console.log("error");
-        console.log(JSON.stringify(error));	
-        console.log(error.error.message)	
-        $(opClass).text(error.error.message);
-        $(opClass).show();		
-    }); ;			
+    }			
 });
 
 $(document).on("click", "#txion-btn", async function(){
@@ -84,19 +94,24 @@ $(document).on("click", "#txion-btn", async function(){
     console.log("token: "+ token);
     var opClass = ".txion-success";
 
-    const tx = await rewardMgmtSigner.setTranLimit(token).then(async function(tx){
-        $(opClass).text("Waiting for block confirmation...");
+    if(token > 0) {
+        const tx = await rewardMgmtSigner.setTranLimit(token).then(async function(tx){
+            $(opClass).text("Waiting for block confirmation...");
+            $(opClass).show();
+            var succMes =  "Now user can transfer max " +token+ " tokens per transaction";
+            var failureMes = "Txion failed";
+            setTimeout(await function(){dispResult(token, tx.hash, opClass, succMes, failureMes); }, 5000);
+        }).catch(function (error){
+            console.log("error");
+            console.log(JSON.stringify(error));	
+            console.log(error.error.message)	
+            $(opClass).text(error.error.message);
+            $(opClass).show();		
+        });
+    } else {
+        $(opClass).text("Invalid number of tokens");
         $(opClass).show();
-        var succMes =  "Now user can transfer max " +token+ " tokens per transaction";
-        var failureMes = "Txion failed";
-        setTimeout(await function(){dispResult(token, tx.hash, opClass, succMes, failureMes); }, 5000);
-    }).catch(function (error){
-        console.log("error");
-        console.log(JSON.stringify(error));	
-        console.log(error.error.message)	
-        $(opClass).text(error.error.message);
-        $(opClass).show();		
-    }); ;			
+    }			
 });
 
 $(document).on("change", "#ratio", async function(){
@@ -114,19 +129,24 @@ $(document).on("click", "#ratio-btn", async function(){
     console.log("Ratio value: "+ value);
     var opClass = ".ratio-success";
 
-    const tx = await rewardMgmtSigner.setConversionRatio(value).then(async function(tx){
-        $(opClass).text("Waiting for block confirmation...");
+    if(value > 0) {
+        const tx = await rewardMgmtSigner.setConversionRatio(value).then(async function(tx){
+            $(opClass).text("Waiting for block confirmation...");
+            $(opClass).show();
+            var succMes =  "Points to token convertion ratio changed to "+ value + "%";
+            var failureMes = "Txion failed";
+            setTimeout(await function(){dispResult(value, tx.hash, opClass, succMes, failureMes); }, 5000);
+        }).catch(function (error){
+            console.log("error");
+            console.log(JSON.stringify(error));	
+            console.log(error.error.message)	
+            $(opClass).text(error.error.message);
+            $(opClass).show();		
+        });
+    } else {
+        $(opClass).text("Invalid conversion ratio");
         $(opClass).show();
-        var succMes =  "Points to token convertion ratio changed to "+ value + "%";
-        var failureMes = "Txion failed";
-        setTimeout(await function(){dispResult(value, tx.hash, opClass, succMes, failureMes); }, 5000);
-    }).catch(function (error){
-        console.log("error");
-        console.log(JSON.stringify(error));	
-        console.log(error.error.message)	
-        $(opClass).text(error.error.message);
-        $(opClass).show();		
-    }); ;
+    }
 });
 
 $(document).on("click", "#points-btn", async function(){
@@ -135,19 +155,24 @@ $(document).on("click", "#points-btn", async function(){
     console.log("points: "+ points + " Address: "+address);
     var opClass = ".points-success";
     
-    const tx = await rewardMgmtSigner.setPointsToUser(points, address).then(async function(tx){
-        $(opClass).text("Waiting for block confirmation...");
+    if(points > 0 && address > 0 && Web3.utils.isAddress(address)) {
+        const tx = await rewardMgmtSigner.setPointsToUser(points, address).then(async function(tx){
+            $(opClass).text("Waiting for block confirmation...");
+            $(opClass).show();
+            var succMes =  "Points " +points+ " for the user " + address + " successfully set";
+            var failureMes = "Txion failed";
+            setTimeout(await function(){dispResult(points, tx.hash,opClass, succMes, failureMes); }, 5000);
+        }).catch(function (error){
+            console.log("error");
+            console.log(JSON.stringify(error));	
+            console.log(error.error.message)	
+            $(opClass).text(error.error.message);
+            $(opClass).show();		
+        });
+    } else {
+        $(opClass).text("Invalid address or points");
         $(opClass).show();
-        var succMes =  "Points " +points+ " for the user " + address + " successfully set";
-        var failureMes = "Txion failed";
-        setTimeout(await function(){dispResult(address, points, tx.hash,opClass, succMes, failureMes); }, 5000);
-    }).catch(function (error){
-        console.log("error");
-        console.log(JSON.stringify(error));	
-        console.log(error.error.message)	
-        $(opClass).text(error.error.message);
-        $(opClass).show();		
-    }); ;			
+    }		
 });
 
 async function dispResult(token, hash,opClass, succMes, failureMes) {
