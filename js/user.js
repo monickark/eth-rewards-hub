@@ -1,4 +1,4 @@
-import { ethers } from "https://cdn.ethers.io/lib/ethers-5.0.esm.min.js";
+import { ethers } from "../assets/ether.js";
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 import { reward, token } from "./common.js";
 

@@ -20,7 +20,6 @@ contract Ownable {
 }
 
 contract RewardMgmt is Ownable {
-    address owner;
     uint256 public maxDayToken;
     uint256 public maxTransToken;
     uint256 public conversionRatio;
