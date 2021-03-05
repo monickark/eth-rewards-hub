@@ -1,12 +1,16 @@
-import { ethers } from "../assets/ether.js";
+import { ethers } from "../assets/ether.js";;
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 import { reward, token } from "./common.js";
 
 let rewardMgmtSigner = reward();
 getUserBalance();
 var conversionRatio;
+var pointsBalance;
+var tokenBalance;
+
     //REDEEM TOKEN
     $(document).on("click", "#redeem-btn", async function(){
+    $("#redeem-btn").attr("disabled", "disabled");
     var token = parseInt($("#redeem-token").val());
     var points = parseInt($("#points").val());
     var existingPoint = parseInt($(".points-bal").text());
@@ -16,27 +20,39 @@ var conversionRatio;
     console.log("existingPoint: "+ existingPoint);
     
     var opClass = ".opClass";
+    var button = "#redeem-btn";
     if(points <= existingPoint  && points > 0 && token > 0) {
         await rewardMgmtSigner.redeemToken(token).then(async function(tx){       
             $(opClass).text("Waiting for block confirmation..");
             $(opClass).show();
             var succMes =  "Successfully redeemed "+ token +" token.";
             var FailureMes = "Txion failed";
-            setTimeout(function () { dispOp(tx.hash, points, opClass, succMes, FailureMes); }, 5000);
+            setTimeout(function () { dispOp(tx.hash, points, opClass, succMes, FailureMes,button); }, 5000);
             }).catch(function (error){
-                console.log("error");
-                console.log(JSON.stringify(error));	
-                console.log(error.error.message)	
-                $(opClass).text(error.error.message);
-                $(opClass).show();		
+                console.log("error1");
+                    console.log(JSON.stringify(error));
+                    var message;	
+                    if(error.error) {
+                        console.log(error.error.message);
+                        message = error.error.message;
+                    } else {
+                        console.log(error.message);
+                        message = error.message;
+                    }            
+                    $(opClass).text(message);
+                    $(opClass).show();
+                    $("#points").val(pointsBalance);
+                    $("#redeem-token").val(tokenBalance);	
+                    $("#redeem-btn").removeAttr("disabled");		
             }); 
     } else {
         $(opClass).text("Invalid points & tokens to redeem");
         $(opClass).show();
+        $("#redeem-btn").removeAttr("disabled");
     }
      
     });	
-    async function dispOp(hash, points, opClass, succMes, failureMes) {
+    async function dispOp(hash, points, opClass, succMes, failureMes,button) {
     provider.getTransactionReceipt(hash).then(async function(receipt) {
         console.log("Transaction Receipt: " + receipt);
             if(receipt) {
@@ -45,22 +61,32 @@ var conversionRatio;
                     console.log("success");		
                     console.log(points);			
                     await rewardMgmtSigner.deductPoints(points).then(async function(tx){
-                        setTimeout(function () { dispFinalOp(tx.hash, points, opClass, succMes, failureMes); }, 5000);
+                        setTimeout(function () { dispFinalOp(tx.hash, points, opClass, succMes, failureMes,button); }, 5000);
                     }).catch(function (error){
-                        console.log("inner error");		
-                        console.log(JSON.stringify(error));		
-                        $(opClass).text(error.error.message);
+                        var message;	
+                        if(error.error) {
+                            console.log(error.error.message);
+                            message = error.error.message;
+                        } else {
+                            console.log(error.message);
+                            message = error.message;
+                        }            
+                        $(opClass).text(message);
+                        $(opClass).show();
+                        $("#points").val(pointsBalance);
+                        $("#redeem-token").val(tokenBalance);	
+                        $("#redeem-btn").removeAttr("disabled");
                     });                      
                 } else {
                     console.log("fail");					
                     $(opClass).text(failureMes);
                 }
             } else {
-                setTimeout(function () { dispOp(hash, points, opClass, succMes, failureMes); }, 5000); 
+                setTimeout(function () { dispOp(hash, points, opClass, succMes, failureMes,button); }, 5000); 
             }
         });		
     }
-    async function dispFinalOp(hash, points, opClass, succMes, failureMes) {        
+    async function dispFinalOp(hash, points, opClass, succMes, failureMes,button) {        
         provider.getTransactionReceipt(hash).then(async function(receipt) {
             console.log("Transaction Receipt: " + receipt);
                 if(receipt) {
@@ -74,8 +100,9 @@ var conversionRatio;
                         console.log("fail");					
                         $(opClass).text(failureMes);
                     }
+                    $(button).removeAttr("disabled");
                 } else {
-                    setTimeout(function () { dispFinalOp(hash, points, opClass, succMes, failureMes); }, 5000); 
+                    setTimeout(function () { dispFinalOp(hash, points, opClass, succMes, failureMes,button); }, 5000); 
                 }
             });		
     }
@@ -89,6 +116,7 @@ var conversionRatio;
             var redeemedToken = parseInt(redeemPoint*onetPt);
             console.log("onept : "+ onetPt + " redeemPoint : "+ redeemPoint + " redeemedToken : "+ redeemedToken);
             $("#redeem-token").val(redeemedToken)
+            tokenBalance = redeemedToken;
         } else{
             var points = parseInt($("#points").val());
             console.log("points : " + points);
@@ -96,6 +124,7 @@ var conversionRatio;
             var token = parseInt(( points * conversionRatio)/100);
             $("#redeem-token").val(token);
             console.log("Token : " + token);
+            tokenBalance = token;
         }
     });
     // $(document).on("change", "#redeem-token", async function(){
@@ -142,13 +171,16 @@ var conversionRatio;
     // ON LOAD FUNCTIONS
     function loadPointsConvert() {
         var points = parseInt($(".points-bal").text());
+        pointsBalance = points;
         var onetPt = parseInt($(".one-usd").text())/1000;
 
         if($('#usd-convert').is(':checked')) {
             var token = parseInt(onetPt*points);
+            tokenBalance = token;
         }
         else{
             var token = parseInt(( points * conversionRatio)/100);
+            tokenBalance = token;
         }
         console.log("points : " + points + "onetPt : " + onetPt + "token : " + token)
         $("#points").val(points);

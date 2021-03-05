@@ -1,5 +1,7 @@
 "use strict";
 
+/* import { ethers } from "https://cdn.ethers.io/lib/ethers-5.0.esm.min.js"; */
+import { ethers } from "../assets/ether.js";
 /**
  * Example JavaScript code that interacts with the page and Web3 wallets
  */
@@ -13,7 +15,6 @@ const evmChains = window.evmChains;
 // Web3modal instance
 let web3Modal
 
-// Chosen wallet provider given by the dialog window
 let provider;
 
 
@@ -24,7 +25,7 @@ let selectedAccount;
 /**
  * Setup the orchestra
  */
-function init() {
+async function init() {
 
   console.log("Initializing example");
   console.log("WalletConnectProvider is", WalletConnectProvider);
@@ -68,6 +69,18 @@ function init() {
   });
 
   console.log("Web3Modal instance is", web3Modal);
+
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  try{
+    var addr = await signer.getAddress(); 
+    console.log("My addr: " + addr);
+    document.querySelector("#connected").style.display = "block";
+    document.querySelector("#prepare").style.display = "none";
+    document.querySelector("#selected-account").textContent = addr;
+  } catch{
+    console.log("no account connected....");
+  }
 }
 
 
@@ -80,12 +93,6 @@ async function fetchAccountData() {
   const web3 = new Web3(provider);
 
   console.log("Web3 instance is", web3);
-
-  // Get connected chain id from Ethereum node
-  const chainId = await web3.eth.getChainId();
-  // Load chain information over an HTTP API
-  const chainData = evmChains.getChain(chainId);
- // document.querySelector("#network-name").textContent = chainData.name;
 
   // Get list of accounts of the connected wallet
   const accounts = await web3.eth.getAccounts();
@@ -129,28 +136,28 @@ async function fetchAccountData() {
 
 
 
-/**
- * Fetch account data for UI when
- * - User switches accounts in wallet
- * - User switches networks in wallet
- * - User connects wallet initially
- */
-async function refreshAccountData() {
+// /**
+//  * Fetch account data for UI when
+//  * - User switches accounts in wallet
+//  * - User switches networks in wallet
+//  * - User connects wallet initially
+//  */
+// async function refreshAccountData() {
 
-  // If any current data is displayed when
-  // the user is switching acounts in the wallet
-  // immediate hide this data
-  document.querySelector("#connected").style.display = "none";
-  document.querySelector("#prepare").style.display = "block";
+//   // If any current data is displayed when
+//   // the user is switching acounts in the wallet
+//   // immediate hide this data
+//   document.querySelector("#connected").style.display = "none";
+//   document.querySelector("#prepare").style.display = "block";
 
-  // Disable button while UI is loading.
-  // fetchAccountData() will take a while as it communicates
-  // with Ethereum node via JSON-RPC and loads chain data
-  // over an API call.
-  document.querySelector("#btn-connect").setAttribute("disabled", "disabled")
-  await fetchAccountData(provider);
-  document.querySelector("#btn-connect").removeAttribute("disabled")
-}
+//   // Disable button while UI is loading.
+//   // fetchAccountData() will take a while as it communicates
+//   // with Ethereum node via JSON-RPC and loads chain data
+//   // over an API call.
+//   document.querySelector("#btn-connect").setAttribute("disabled", "disabled")
+//   await fetchAccountData(provider);
+//   document.querySelector("#btn-connect").removeAttribute("disabled")
+// }
 
 
 /**
@@ -181,7 +188,8 @@ async function onConnect() {
     fetchAccountData();
   });
 
-  await refreshAccountData();
+  window.location.reload();
+//   await refreshAccountData();
 }
 
 /**
@@ -208,6 +216,7 @@ async function onDisconnect() {
   // Set the UI back to the initial state
   document.querySelector("#prepare").style.display = "block";
   document.querySelector("#connected").style.display = "none";
+  document.querySelector("#selected-account").textContent = selectedAccount;
 }
 
 
