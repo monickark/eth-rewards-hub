@@ -40,7 +40,7 @@ contract RewardMgmt is Ownable {
     mapping (address => UserRewards) public rewards;
     mapping (address => uint256) public balancePoints;
     
-    function redeemToken(uint256 tokenToRedeem) public returns(bool) {
+    function redeemToken(uint256 tokenToRedeem, uint256 points) public returns(bool) {
        UserRewards memory user = rewards[msg.sender];
        uint256 diff = block.timestamp - user.lastWithdrawn;
        
@@ -57,10 +57,9 @@ contract RewardMgmt is Ownable {
            } else {
                rewards[msg.sender].dayWithdrawn = tokenToRedeem;
            }
-           
                rewards[msg.sender].lastWithdrawn = block.timestamp;
-           
        }
+       deductPoints(points);
        
        return true;
     }
@@ -111,7 +110,7 @@ contract RewardMgmt is Ownable {
         return true;
     }
 
-    function deductPoints(uint256 points) public returns(bool success) {
+    function deductPoints(uint256 points) internal returns(bool success) {
         require(balancePoints[msg.sender] >= points, 'No points to deduct');
         balancePoints[msg.sender] -= points;
         return true;

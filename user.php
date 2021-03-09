@@ -26,10 +26,10 @@
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			  <ul class="navbar-nav mr-auto">
 				<li class="nav-item ">
-				  <a class="nav-link" href="admin.html">Admin </a>
+				  <a class="nav-link" href="admin.php">Admin </a>
 				</li>
 				<li class="nav-item active">
-				  <a class="nav-link" href="user.html">User <span class="sr-only">(current)</span></a>
+				  <a class="nav-link" href="user.php">User <span class="sr-only">(current)</span></a>
 				</li>
 			  </ul>
 			</div>
@@ -46,6 +46,34 @@
 			  </div>
 			<div id="selected-account"></div> 
 		  </nav>
+
+		  <?php
+					$servername = "localhost";
+					$username = "root";
+					$password = "";
+					$dbname = "rewards";
+					$isChecked;
+					// Create connection
+					$conn = new mysqli($servername, $username, $password, $dbname);
+					// Check connection
+					if ($conn->connect_error) {
+					die("Connection failed: " . $conn->connect_error);
+					}
+					$sql = "SELECT id, isChecked FROM redeem";
+					$result = $conn->query($sql);
+
+					if ($result->num_rows > 0) {
+					while($row = $result->fetch_assoc()) {
+						$isChecked= $row["isChecked"];
+					}			
+				?>
+					<input type="checkbox" id="usd-convert" name="usd-convert" 
+					<?php echo ($isChecked == 1 ? 'checked' : '');?>/>
+					<?php
+					 }
+					$conn->close();
+					?>		
+		<div class="mixs-price"></div> <div class="one-usd"></div>
 		  <div class="container">
 		  <div class="row">
 			<h1 class="col-md-12 text-center"> REWARDS HUB USER FLOW </h1>
@@ -53,10 +81,6 @@
 			<div class="col-md-12">					
 					<h3 class="row col-lg-12" >REDEEM TOKEN</h3><div>
 					<div class="form-group row col-lg-12">
-						<p class="col-lg-12"> 1 MIXS token = <span class="mixs-price"></span> USD || 1000 points = 1 USD || 1000 points = <span class="one-usd"></span> MIXS token</p>
-						<p class="col-lg-12"><input type="checkbox" id="usd-convert" checked name="usd-convert" value="1"/>
-							<label for="usd-convert"> Need Points to token conversion based on today USD price?</label>
-						</p>
 						<input class="col-lg-2 form-control" id="points" type="text" placeholder="Points to redeem"/>
 						<input class="col-lg-2 form-control" id="redeem-token" type="text" placeholder="Tokens to redeem"/>
 						<button class="col-lg-2 btn btn-dark" id="redeem-btn">Redeem</button></div>  
@@ -64,9 +88,7 @@
 					</div>
 					
 					<h3 class="row col-lg-12" >TOKEN BALANCE : <span class="user-bal"></span> MIXS </h3><div>
-					<h3 class="row col-lg-12" >POINTS BALANCE : <span class="points-bal"></span> MIXS </h3>
-	
-	
+					<h3 class="row col-lg-12" >POINTS BALANCE : <span class="points-bal"></span> MIXS </h3>	
 			</div>
 		  </div>	
 		</div>
@@ -74,6 +96,9 @@
 	<script>
 		$(document).ready(function() {
 			$(".opClass").hide(); 
+			$(".mixs-price").hide();
+			$(".one-usd").hide();
+			$("#usd-convert").hide();
 		});
 	</script>
 	<script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
@@ -85,5 +110,6 @@
 	<script type="module" src="js/example.js"></script>
 	<!-- <script type="text/javascript" src="js/example.js"></script> -->
 	<script type="module" src="js/user.js"></script>
+	<script type="text/javascript" src="js/redeem.js"></script>
 	
 </html>

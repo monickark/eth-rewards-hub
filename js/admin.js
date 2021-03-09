@@ -19,7 +19,7 @@ $(document).on("click", "#pool-create", async function(){
     var opClass = ".pool-info";
     var button = "#pool-create";
     if(token > 0) {
-        await tokenSigner.approve('0x6C889c970AAb3ddc205A9D1863048C79286E5931', token)
+        await tokenSigner.approve('0x6EeF70C1048c33b599f94A6c6E24fE1C45DDf466', token)
         .then(async function(receipt) {
             $(opClass).text("Waiting for block confirmation...");
             $(opClass).show();
@@ -299,3 +299,4 @@ async function getTokenBalance() {
     $(".owner").text("Owner Address :  "+ _owner);
     console.log("owner : " + _owner);
 }
+

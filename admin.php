@@ -26,10 +26,10 @@
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			  <ul class="navbar-nav mr-auto">
 				<li class="nav-item active">
-				  <a class="nav-link" href="admin.html">Admin <span class="sr-only">(current)</span> </a>
+				  <a class="nav-link" href="admin.php">Admin <span class="sr-only">(current)</span> </a>
 				</li>
 				<li class="nav-item">
-				  <a class="nav-link" href="user.html">User</a>
+				  <a class="nav-link" href="user.php">User</a>
 				</li>
 			  </ul>
 			</div>
@@ -85,15 +85,51 @@
 						<button class="col-lg-4 form-control btn btn-danger" id="points-btn">Add</button> 
 						<div class="col-lg-12 alert alert-danger points-success" role="alert"></div>			
 					</div>
+				<h2 class="row col-lg-12" >REDEEM CONDITION</h2>
+				<div class="form-group row col-lg-12"></div>	
+					<p class="col-lg-12"> 1 MIXS token = <span class="mixs-price"></span> USD || 1000 points = 1 USD || 1000 points = <span class="one-usd"></span> MIXS token</p>
+					<p class="col-lg-12">	
+				<?php
+					$servername = "localhost";
+					$username = "root";
+					$password = "";
+					$dbname = "rewards";
+					$isChecked;
+					// Create connection
+					$conn = new mysqli($servername, $username, $password, $dbname);
+					// Check connection
+					if ($conn->connect_error) {
+					die("Connection failed: " . $conn->connect_error);
+					}
+					$sql = "SELECT id, isChecked FROM redeem";
+					$result = $conn->query($sql);
 
+					if ($result->num_rows > 0) {
+					while($row = $result->fetch_assoc()) {
+						$isChecked= $row["isChecked"];
+					}			
+				?>
+					<input type="checkbox" id="usd-convert" name="usd-convert" 
+					onclick="location.href = 'update.php?isChecked=<?php if ($isChecked == 1) 
+					{?>0<?php } else {?>1<?php } ?>';"
+					<?php echo ($isChecked == 1 ? 'checked' : '');?>/>
+					<?php
+					 }
+					$conn->close();
+					?>				
+						<label for="usd-convert"> Need Points to token conversion based on today USD price?</label>
+					</p>
+				</div>
 			</div>
 		  </div>	
 		</div>
+		
 </body>
 	<script>
 		$(document).ready(function() {
 			$(".points-success").hide(); 
 		});
+		
 	</script>
 	<script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/web3modal@1.9.0/dist/index.js"></script>
@@ -102,6 +138,6 @@
 	<script type="text/javascript" src="https://unpkg.com/fortmatic@2.0.6/dist/fortmatic.js"></script>
 	<!-- This is our example code -->
 	<script type="module" src="js/example.js"></script>
-	<!-- <script type="text/javascript" src="js/example.js"></script> -->	
 	<script type="module" src="js/admin.js"></script>
+	<script type="text/javascript" src="js/redeem.js"></script>
 </html>
